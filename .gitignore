@@ -3,3 +3,9 @@
 
 # Actual file being run (but keep example file)
 verify_backups.py
+
+# Any hashes
+*.json
+*.md5
+*.sha1
+*.sha256
