@@ -12,10 +12,15 @@ def file_checksum(path):
     return hash_sha.hexdigest()
 
 def hash_folder(source_path):
+    ignore_files = {".DS_Store"}  # add more filenames here if needed
+    
     source_path = Path(source_path).resolve()
     hashes = {}
     for root, _, files in os.walk(source_path):
         for fname in files:
+            if fname in ignore_files:
+                continue  # skip unwanted files
+            
             full_path = Path(root) / fname
             rel_path = str(full_path.relative_to(source_path))
             hashes[rel_path] = file_checksum(full_path)
@@ -27,6 +32,23 @@ def hash_folder(source_path):
         "file_hashes": hashes
     }
     return result
+
+def json_name_from_path(folder_path, name=None):
+    folder_path = os.path.normpath(folder_path)
+    ts = datetime.now().strftime("%Y%m%d")
+    
+    if folder_path.startswith("/Volumes/"):
+        parts = folder_path.split(os.sep)
+        base = parts[2] if len(parts) > 2 else "unknown_drive"
+    elif folder_path.startswith("/Users/"):
+        base = "local"
+    else:
+        base = os.path.basename(folder_path)
+    
+    if name:
+        base = f"{base}_{name}"
+    
+    return f"hash_{base}_{ts}.json"
 
 def save_hashes(hashes, output_path):
     with open(output_path, "w") as f:
