@@ -9,3 +9,6 @@ verify_backups.py
 *.md5
 *.sha1
 *.sha256
+
+# Cache
+__pychache__
